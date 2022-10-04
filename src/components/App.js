@@ -9,7 +9,7 @@ import { CurrentUserContext } from "../contexts/CurrentUserContext";
 import EditAvatarPopup from "./EditAvatarPopup";
 import AddPlacePopup from "./AddPlacePopup";
 import DeleteCardPopup from "./DeleteCardPopup";
-import { Switch, Route, useLocation } from "react-router-dom";
+import { Switch, Route } from "react-router-dom";
 import Register from "./Register";
 import Login from './Login';
 import ProtectedRoute from "./ProtectedRoute";
@@ -30,32 +30,7 @@ function App() {
   const [cards, setCards] = useState([]);
   const [currentUser, setCurrentUser] = useState({});
   const [loggedIn, setLoggedIn] = useState(false);
-  const [headerLink, setHeaderLink] = useState({
-    name: 'Регистрация',
-    path: '/sign-up'
-  });
-  const location = useLocation();
 
-  useEffect(()=>{
-    if (location.pathname === '/sign-in') {
-      setHeaderLink({
-        name: 'Регистрация',
-        path: '/sign-up'
-      });
-    }
-    else if (location.pathname === '/sign-up') {
-      setHeaderLink({
-        name: 'Вход',
-        path: '/sign-in'
-      });
-    }
-    else {
-      setHeaderLink ({
-        name: 'Выйти',
-        path: '/sign-in'
-      });
-    }
-  },[location]);
 
   //Hookes
   //Запрос данных о пользователе и карточек при монтировании
@@ -204,7 +179,7 @@ function App() {
   return (
     <div className="main-page">
       <CurrentUserContext.Provider value={currentUser}>
-          <Header link={headerLink}/>
+          <Header />
           <Switch>
             <Route path="/sign-up">
               <Register onRegister={handleRegister}/>
