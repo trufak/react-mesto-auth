@@ -9,7 +9,7 @@ import { CurrentUserContext } from "../contexts/CurrentUserContext";
 import EditAvatarPopup from "./EditAvatarPopup";
 import AddPlacePopup from "./AddPlacePopup";
 import DeleteCardPopup from "./DeleteCardPopup";
-import { Switch, Route } from "react-router-dom";
+import { Switch, Route, useLocation } from "react-router-dom";
 import Register from "./Register";
 import Login from './Login';
 import ProtectedRoute from "./ProtectedRoute";
@@ -34,6 +34,28 @@ function App() {
     name: 'Регистрация',
     path: '/sign-up'
   });
+  const location = useLocation();
+
+  useEffect(()=>{
+    if (location.pathname === '/sign-in') {
+      setHeaderLink({
+        name: 'Регистрация',
+        path: '/sign-up'
+      });
+    }
+    else if (location.pathname === '/sign-up') {
+      setHeaderLink({
+        name: 'Вход',
+        path: '/sign-in'
+      });
+    }
+    else {
+      setHeaderLink ({
+        name: 'Выйти',
+        path: '/sign-in'
+      });
+    }
+  },[location]);
 
   //Hookes
   //Запрос данных о пользователе и карточек при монтировании
