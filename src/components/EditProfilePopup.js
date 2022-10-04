@@ -1,16 +1,13 @@
 import PopupWithForm from "./PopupWithForm";
 import { useState, useContext, useEffect } from "react";
 import { CurrentUserContext } from "../contexts/CurrentUserContext";
-import useForm from "../utils/useForm";
+import { useFormAndValidation } from "../hooks/useFormAndValidation";
 
 function EditProfilePopup({ isOpen, onUpdateUser, onClose }) {
   //States
   const [textButton, setTextButton] = useState("Сохранить");
-  const { values, handleChange, setValues } = useForm({
-    name: "",
-    description: "",
-  });
   const currentUser = useContext(CurrentUserContext);
+  const {values, handleChange, errors, isValid, setValues, resetForm} = useFormAndValidation();
 
   useEffect(() => {
     setValues({
@@ -54,7 +51,7 @@ function EditProfilePopup({ isOpen, onUpdateUser, onClose }) {
             value={values.name || ""}
             onChange={handleChange}
           />
-          <span className="popup__input-error name-profile-error" />
+          <span className="popup__input-error name-profile-error">{errors.name}</span>
         </li>
         <li>
           <input
@@ -69,7 +66,7 @@ function EditProfilePopup({ isOpen, onUpdateUser, onClose }) {
             value={values.description || ""}
             onChange={handleChange}
           />
-          <span className="popup__input-error desc-profile-error" />
+          <span className="popup__input-error desc-profile-error">{errors.description}</span>
         </li>
       </ul>
     </PopupWithForm>

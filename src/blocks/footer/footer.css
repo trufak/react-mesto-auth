@@ -1,4 +1,6 @@
 .footer {
+  grid-area: footer;
+  width: 100%;
   margin: 64px auto 0;
   max-width: 880px;
 }

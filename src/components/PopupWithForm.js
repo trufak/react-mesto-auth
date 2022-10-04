@@ -1,5 +1,3 @@
-import FormValidator from '../utils/FormValidator';
-import formValidSetting from '../utils/formValidSetting';
 import { useRef, useEffect, useState } from 'react';
 
 function PopupWithForm({
@@ -12,17 +10,6 @@ function PopupWithForm({
   textButton,
   children,
 }) {
-
-  const formRef = useRef();
-  const [formValidator] = useState(new FormValidator(formValidSetting));
-
-  useEffect(()=>{
-    formValidator.enableValidation(formRef.current);
-  },[]);
-
-  useEffect(()=>{
-    isOpen && formValidator.clearErrors();
-  },[isOpen]);
 
   return (
     <div
@@ -37,7 +24,6 @@ function PopupWithForm({
         />
         <h3 className="popup__title">{title}</h3>
         <form
-          ref={formRef}
           name={name}
           className="popup__form"
           noValidate

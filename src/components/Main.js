@@ -15,7 +15,7 @@ function Main({
   const currentUser = React.useContext(CurrentUserContext);
 
   return (
-    <main>
+    <main className="content">
       <section className="profile">
         <button
           className="profile__edit-avatar-button"

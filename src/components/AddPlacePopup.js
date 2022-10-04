@@ -1,21 +1,14 @@
 import PopupWithForm from "./PopupWithForm";
 import { useState, useEffect } from "react";
-import useForm from "../utils/useForm";
+import { useFormAndValidation } from "../hooks/useFormAndValidation";
 
 function AddPlacePopup({ isOpen, onAddPlace, onClose }) {
   const [textButton, setTextButton] = useState("Создать");
-
-  const { values, handleChange, setValues } = useForm({
-    name: "",
-    link: "",
-  });
+  const {values, handleChange, errors, isValid, setValues, resetForm} = useFormAndValidation();
 
   useEffect(() => {
     isOpen && setTextButton("Создать");
-    setValues({
-      name: "",
-      link: "",
-    });
+    resetForm();
   }, [isOpen]);
 
   const handleSubmit = (e) => {
@@ -48,7 +41,7 @@ function AddPlacePopup({ isOpen, onAddPlace, onClose }) {
             value={values.name}
             onChange={handleChange}
           />
-          <span className="popup__input-error name-card-error" />
+          <span className="popup__input-error name-card-error">{errors.name}</span>
         </li>
         <li>
           <input
@@ -61,7 +54,7 @@ function AddPlacePopup({ isOpen, onAddPlace, onClose }) {
             value={values.link}
             onChange={handleChange}
           />
-          <span className="popup__input-error link-card-error" />
+          <span className="popup__input-error link-card-error">{errors.link}</span>
         </li>
       </ul>
     </PopupWithForm>

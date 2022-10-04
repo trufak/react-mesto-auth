@@ -8,11 +8,15 @@
 
 /*Стили блока header*/
 @import url(../blocks/header/header.css);
+@import url(../blocks/header/__auth-container/header__auth-container.css);
+@import url(../blocks/header/__email/header__email.css);
+@import url(../blocks/header/__link-auth/header__link-auth.css);
 
 /*Стили блока logo*/
 @import url(../blocks/logo/logo.css);
 @import url(../blocks/logo/_header/logo_header.css);
 
+@import url(../blocks/content/content.css);
 /*Стили блока profile*/
 @import url(../blocks/profile/profile.css);
 @import url(../blocks/profile/__edit-avatar-button/profile__edit-avatar-button.css);
@@ -62,4 +66,15 @@
 @import url(../blocks/close-button/close-button.css);
 @import url(../blocks/close-button/_popup/close-button_popup.css);
 
-
+/*Стили блока register*/
+@import url(../blocks/sign/sign.css);
+@import url(../blocks/sign/__title/sign__title.css);
+@import url(../blocks/sign/__login-link/sign__login-link.css);
+/*form*/
+@import url(../blocks/form/form.css);
+@import url(../blocks/form/_sign/form_sign.css);
+@import url(../blocks/form/__input/form__input.css);
+@import url(../blocks/form/__input/_sign/form__input_sign.css);
+@import url(../blocks/form/__submit/form__submit.css);
+@import url(../blocks/form/__submit/_sign/form__submit_sign.css);
+@import url(../blocks/form/__error/form__error.css);
