@@ -8,10 +8,8 @@ function Login({ onLogin }) {
   const handleSubmit = (e) => {
     e.preventDefault();
     setTextButton("Вход...");
-    onLogin({
-      email: values.email,
-      password: values.password
-    });
+    onLogin(values.email, values.password)
+    .finally(()=>setTextButton("Войти"));
   };
 
   return (

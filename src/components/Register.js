@@ -10,10 +10,8 @@ function Register({onRegister}) {
   const handleSubmit = (e) => {
     e.preventDefault();
     setTextButton('Регистрация...');
-    onRegister({
-      email: values.email,
-      password: values.password,
-    });
+    onRegister(values.email, values.password)
+    .finally(()=>setTextButton('Зарегистрироваться'));
   };
 
   return (

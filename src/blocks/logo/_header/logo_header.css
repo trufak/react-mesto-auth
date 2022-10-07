@@ -1,11 +1,12 @@
 .logo_header {
-  margin: 0 0 37px;
+  grid-area: logo;
+  margin: 28px 0 32px;
   stroke: #FFFFFF;
 }
 
 @media screen and (max-width: 425px){
   .logo_header {
     width: 103.74px;
-    margin: 0 0 27.6px 26px;
+    margin: 27px 0 28px 30px;
   }
 }

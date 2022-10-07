@@ -9,11 +9,12 @@ import { CurrentUserContext } from "../contexts/CurrentUserContext";
 import EditAvatarPopup from "./EditAvatarPopup";
 import AddPlacePopup from "./AddPlacePopup";
 import DeleteCardPopup from "./DeleteCardPopup";
-import { Switch, Route } from "react-router-dom";
+import { Switch, Route, useHistory } from "react-router-dom";
 import Register from "./Register";
 import Login from './Login';
 import ProtectedRoute from "./ProtectedRoute";
 import apiAuth from "../utils/authApi";
+import InfoTooltip from "./InfoTooltip";
 
 function App() {
   //States
@@ -30,18 +31,33 @@ function App() {
   const [cards, setCards] = useState([]);
   const [currentUser, setCurrentUser] = useState({});
   const [loggedIn, setLoggedIn] = useState(false);
-
+  const history = useHistory();
 
   //Hookes
-  //Запрос данных о пользователе и карточек при монтировании
+  //Запрос email о пользователе и карточек
+  useEffect(()=>{
+    const token = localStorage.getItem('tokenMesto');
+    if (token) {
+      apiAuth.getUser(token)
+      .then (data=>{
+        setLoggedIn(true);
+        setCurrentUser(Object.assign(data.data, currentUser));
+        history.push('/');
+      })
+      .catch(err=>console.log(err));
+    }
+  },[]);
+  //Запрос данных о пользователе и карточек
   useEffect(() => {
-    Promise.all([api.getUserInfo(), api.getInitialCards()])
+    if (loggedIn) {
+      Promise.all([api.getUserInfo(), api.getInitialCards()])
       .then(([userInfo, initialCards]) => {
-        setCurrentUser(userInfo);
+        setCurrentUser(Object.assign(userInfo, currentUser));
         setCards(initialCards);
       })
       .catch((err) => console.log(err));
-  }, []);
+    }
+  }, [loggedIn]);
 
   //Functions and callbacks
   //Обработчик нажатия на кнопку редактирования аватара
@@ -133,8 +149,12 @@ function App() {
     isAddPlacePopupOpen && setIsAddPlacePopupOpen(false);
     isCardPopupOpen && setIsCardPopupOpen(false);
     isDeleteCardPopupOpen && setIsDeleteCardPopupOpen(false);
-    isInfoTooltipOpen && setIsInfoTooltipOpen(false);
     setSelectedCard({});
+  };
+  //Закрытие InfoTooltip
+  const closeInfoTooltip = () => {
+    isInfoTooltipOpen && setIsInfoTooltipOpen(false);
+    loggedIn && history.push('/');
   };
 
   const isOpen =
@@ -160,20 +180,31 @@ function App() {
 
   //регистрация пользователя
   const handleRegister = (email, password) => {
-    apiAuth.signup(email, password)
+    return apiAuth.signup(email, password)
     .then(res=>{
-      setIsInfoTooltipOpen(true);
+      handleLogin(res.data.email, password);
     })
-    .catch(err=>console.log(err));
+    .catch(err=>{
+      console.log(err);
+      setIsInfoTooltipOpen(true);
+    });
   };
-    //авторизация пользователя
+  //авторизация пользователя
   const handleLogin = (email, password) => {
-    apiAuth.signup(email, password)
-    .then(token=>{
-      setIsInfoTooltipOpen(true);
-      setLoggedIn(true);
+    return apiAuth.signin(email, password)
+    .then(data=>{
+      if (data.token) {
+        setIsInfoTooltipOpen(true);
+        localStorage.setItem('tokenMesto', data.token);
+        const emailObj = { email: email };
+        setCurrentUser(Object.assign({ email: email }, currentUser));
+        setLoggedIn(true);
+      } else return Promise.reject();
     })
-    .catch(err=>console.log(err));
+    .catch(err=> {
+      console.log(err);
+      setIsInfoTooltipOpen(true);
+    });
   };
 
   return (
@@ -227,6 +258,7 @@ function App() {
                 </div>
             </ProtectedRoute>
           </Switch>
+          <InfoTooltip isOpen={isInfoTooltipOpen} loggedIn={loggedIn} onClose={closeInfoTooltip}/>
       </CurrentUserContext.Provider>
     </div>
   );
