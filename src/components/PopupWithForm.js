@@ -8,13 +8,23 @@ function PopupWithForm({
   title,
   buttonClassName,
   textButton,
-  children,
+  isValid,
+  children
 }) {
+
+  //Обработчик закрытия popup при нажатии на крестик или оверлей
+  const handleClose = (e) => {
+    if (
+      e.target.classList.contains("popup") ||
+      e.target.classList.contains("close-button")
+    )
+    onClose();
+  };
 
   return (
     <div
       className={`popup ${name} ${isOpen && "popup_opened"}`}
-      onClick={onClose}
+      onClick={handleClose}
     >
       <div className="popup__container">
         <button
@@ -32,7 +42,11 @@ function PopupWithForm({
           {children}
           <button
             type="submit"
-            className={`popup__submit-button ${buttonClassName}`}
+            className={
+              `popup__submit-button
+              ${buttonClassName}
+              ${!isValid && 'popup__submit-button_disable'}`}
+            disabled={!isValid}
           >
             {textButton}
           </button>

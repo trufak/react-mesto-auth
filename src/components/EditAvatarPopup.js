@@ -4,11 +4,14 @@ import { useFormAndValidation } from "../hooks/useFormAndValidation";
 
 function EditAvatarPopup({ isOpen, onUpdateAvatar, onClose }) {
   const [textButton, setTextButton] = useState("Сохранить");
-  const {values, handleChange, errors, isValid, setValues, resetForm} = useFormAndValidation();
+  const {values, handleChange, errors, isValid, resetForm, setValues, setIsValid } = useFormAndValidation();
 
   useEffect(() => {
     isOpen && setTextButton("Сохранить");
-    resetForm();
+    setValues({
+      link: ""
+    });
+    setIsValid(false);
   }, [isOpen]);
 
   const handleSubmit = (e) => {
@@ -26,6 +29,7 @@ function EditAvatarPopup({ isOpen, onUpdateAvatar, onClose }) {
       onSubmit={handleSubmit}
       buttonClassName="popup__submit-button_edit"
       textButton={textButton}
+      isValid={isValid}
     >
       <ul className="popup__inputs">
         <li>
@@ -36,7 +40,8 @@ function EditAvatarPopup({ isOpen, onUpdateAvatar, onClose }) {
             type="url"
             placeholder="Ссылка на изображение"
             required
-            value={values.link}
+            value={values.link || ""}
+            onChange={handleChange}
           />
           <span className="popup__input-error link-avatar-error">{errors.link}</span>
         </li>

@@ -7,7 +7,7 @@ function EditProfilePopup({ isOpen, onUpdateUser, onClose }) {
   //States
   const [textButton, setTextButton] = useState("Сохранить");
   const currentUser = useContext(CurrentUserContext);
-  const {values, handleChange, errors, isValid, setValues, resetForm} = useFormAndValidation();
+  const {values, handleChange, errors, isValid, resetForm, setValues, setIsValid} = useFormAndValidation();
 
   useEffect(() => {
     setValues({
@@ -15,6 +15,7 @@ function EditProfilePopup({ isOpen, onUpdateUser, onClose }) {
       name: currentUser.name,
       description: currentUser.about,
     });
+    setIsValid(false);
     isOpen && setTextButton("Сохранить");
   }, [currentUser, isOpen]);
 
@@ -36,6 +37,7 @@ function EditProfilePopup({ isOpen, onUpdateUser, onClose }) {
       onSubmit={handleSubmit}
       buttonClassName="popup__submit-button_edit"
       textButton={textButton}
+      isValid={isValid}
     >
       <ul className="popup__inputs">
         <li>

@@ -5,7 +5,7 @@ import Footer from "./Footer";
 import EditProfilePopup from "./EditProfilePopup";
 import ImagePopup from "./ImagePopup";
 import api from "../utils/api";
-import { CurrentUserContext } from "../contexts/CurrentUserContext";
+import { CurrentUserContext, CurrentUserAuthContext } from "../contexts/CurrentUserContext";
 import EditAvatarPopup from "./EditAvatarPopup";
 import AddPlacePopup from "./AddPlacePopup";
 import DeleteCardPopup from "./DeleteCardPopup";
@@ -30,6 +30,7 @@ function App() {
   const [isCardPopupOpen, setIsCardPopupOpen] = useState(false);
   const [cards, setCards] = useState([]);
   const [currentUser, setCurrentUser] = useState({});
+  const [statusInfoTooltip, setStatusInfoTooltip] = useState(false);
   const [loggedIn, setLoggedIn] = useState(false);
   const history = useHistory();
 
@@ -41,7 +42,7 @@ function App() {
       apiAuth.getUser(token)
       .then (data=>{
         setLoggedIn(true);
-        setCurrentUser(Object.assign(data.data, currentUser));
+        setCurrentUser({...currentUser, email: data.data.email});
         history.push('/');
       })
       .catch(err=>console.log(err));
@@ -52,7 +53,7 @@ function App() {
     if (loggedIn) {
       Promise.all([api.getUserInfo(), api.getInitialCards()])
       .then(([userInfo, initialCards]) => {
-        setCurrentUser(Object.assign(userInfo, currentUser));
+        setCurrentUser({...currentUser, ...userInfo});
         setCards(initialCards);
       })
       .catch((err) => console.log(err));
@@ -82,7 +83,7 @@ function App() {
     api
       .patchUserInfo(userData.name, userData.about)
       .then((userInfo) => {
-        setCurrentUser(userInfo);
+        setCurrentUser({...currentUser, ...userInfo});
         closeAllPopups();
       })
       .catch((err) => console.log(err));
@@ -92,7 +93,7 @@ function App() {
     api
       .changeAvatar(link)
       .then((userInfo) => {
-        setCurrentUser(userInfo);
+        setCurrentUser({...currentUser, ...userInfo});
         closeAllPopups();
       })
       .catch((err) => console.log(err));
@@ -134,14 +135,6 @@ function App() {
       })
       .catch((err) => console.log(err));
   };
-  //Обработчик закрытия popup при нажатии на крестик или оверлей
-  const handleClosePopup = (e) => {
-    if (
-      e.target.classList.contains("popup") ||
-      e.target.classList.contains("close-button")
-    )
-      closeAllPopups();
-  };
   //Закрытие popup
   const closeAllPopups = () => {
     isEditAvatarPopupOpen && setIsEditAvatarPopupOpen(false);
@@ -154,7 +147,6 @@ function App() {
   //Закрытие InfoTooltip
   const closeInfoTooltip = () => {
     isInfoTooltipOpen && setIsInfoTooltipOpen(false);
-    loggedIn && history.push('/');
   };
 
   const isOpen =
@@ -182,10 +174,13 @@ function App() {
   const handleRegister = (email, password) => {
     return apiAuth.signup(email, password)
     .then(res=>{
-      handleLogin(res.data.email, password);
+      setStatusInfoTooltip(true);
+      setIsInfoTooltipOpen(true);
+      history.push('/signin');
     })
     .catch(err=>{
       console.log(err);
+      setStatusInfoTooltip(false);
       setIsInfoTooltipOpen(true);
     });
   };
@@ -194,23 +189,28 @@ function App() {
     return apiAuth.signin(email, password)
     .then(data=>{
       if (data.token) {
-        setIsInfoTooltipOpen(true);
         localStorage.setItem('tokenMesto', data.token);
-        const emailObj = { email: email };
-        setCurrentUser(Object.assign({ email: email }, currentUser));
+        setCurrentUser({...currentUser, email: email});
         setLoggedIn(true);
+        history.push('/');
       } else return Promise.reject();
     })
     .catch(err=> {
       console.log(err);
+      setStatusInfoTooltip(false);
       setIsInfoTooltipOpen(true);
     });
+  };
+
+  const handleLogOut = () => {
+    localStorage.removeItem("tokenMesto");
+    setLoggedIn(false);
   };
 
   return (
     <div className="main-page">
       <CurrentUserContext.Provider value={currentUser}>
-          <Header />
+          <Header onLogOut={handleLogOut} />
           <Switch>
             <Route path="/sign-up">
               <Register onRegister={handleRegister}/>
@@ -231,34 +231,34 @@ function App() {
                   />
                   <ImagePopup
                     card={selectedCard}
-                    onClose={handleClosePopup}
+                    onClose={closeAllPopups}
                     isOpen={isCardPopupOpen}
                   />
                   <EditProfilePopup
                     isOpen={isEditProfilePopupOpen}
-                    onClose={handleClosePopup}
+                    onClose={closeAllPopups}
                     onUpdateUser={handleUpdateUser}
                   />
                   <EditAvatarPopup
                     isOpen={isEditAvatarPopupOpen}
-                    onClose={handleClosePopup}
+                    onClose={closeAllPopups}
                     onUpdateAvatar={handleUpdateAvatar}
                   />
                   <AddPlacePopup
                     isOpen={isAddPlacePopupOpen}
-                    onClose={handleClosePopup}
+                    onClose={closeAllPopups}
                     onAddPlace={handleAddPlaceSubmit}
                   />
                   <DeleteCardPopup
                     isOpen={isDeleteCardPopupOpen}
-                    onClose={handleClosePopup}
+                    onClose={closeAllPopups}
                     onSubmit={handleCardDeleteSubmit}
                   />
                   <Footer />
                 </div>
             </ProtectedRoute>
           </Switch>
-          <InfoTooltip isOpen={isInfoTooltipOpen} loggedIn={loggedIn} onClose={closeInfoTooltip}/>
+          <InfoTooltip isOpen={isInfoTooltipOpen} status={statusInfoTooltip} onClose={closeInfoTooltip}/>
       </CurrentUserContext.Provider>
     </div>
   );

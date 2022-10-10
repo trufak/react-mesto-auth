@@ -1,7 +1,7 @@
 import successImage from "../images/Success.svg";
 import failImage from "../images/Fail.svg";
 
-function InfoTooltip({ isOpen, loggedIn, onClose }) {
+function InfoTooltip({ isOpen, status, onClose }) {
   return (
     <div className={`popup ${isOpen && "popup_opened"}`} onClick={onClose}>
       <div className="popup__container popup__container_login">
@@ -12,10 +12,10 @@ function InfoTooltip({ isOpen, loggedIn, onClose }) {
           />
         <img
           className="popup__mask-login"
-          src={loggedIn ? successImage : failImage}
+          src={status ? successImage : failImage}
         />
         <h3 className="popup__title popup__title_login">
-          {loggedIn
+          {status
             ? "Вы успешно зарегистрировались!"
             : "Что-то пошло не так! Попробуйте ещё раз."}
         </h3>

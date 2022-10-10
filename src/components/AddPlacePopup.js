@@ -4,11 +4,15 @@ import { useFormAndValidation } from "../hooks/useFormAndValidation";
 
 function AddPlacePopup({ isOpen, onAddPlace, onClose }) {
   const [textButton, setTextButton] = useState("Создать");
-  const {values, handleChange, errors, isValid, setValues, resetForm} = useFormAndValidation();
+  const {values, handleChange, errors, isValid, resetForm, setValues, setIsValid } = useFormAndValidation();
 
   useEffect(() => {
     isOpen && setTextButton("Создать");
-    resetForm();
+    setValues({
+      name: "",
+      link: ""
+    });
+    setIsValid(false);
   }, [isOpen]);
 
   const handleSubmit = (e) => {
@@ -26,6 +30,7 @@ function AddPlacePopup({ isOpen, onAddPlace, onClose }) {
       onSubmit={handleSubmit}
       buttonClassName="popup__submit-button_add"
       textButton={textButton}
+      isValid={isValid}
     >
       <ul className="popup__inputs">
         <li>
@@ -38,7 +43,7 @@ function AddPlacePopup({ isOpen, onAddPlace, onClose }) {
             minLength="2"
             maxLength="30"
             required
-            value={values.name}
+            value={values.name || ""}
             onChange={handleChange}
           />
           <span className="popup__input-error name-card-error">{errors.name}</span>
@@ -51,7 +56,7 @@ function AddPlacePopup({ isOpen, onAddPlace, onClose }) {
             type="url"
             placeholder="Ссылка на картинку"
             required
-            value={values.link}
+            value={values.link || ""}
             onChange={handleChange}
           />
           <span className="popup__input-error link-card-error">{errors.link}</span>

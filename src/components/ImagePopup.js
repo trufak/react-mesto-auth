@@ -1,8 +1,18 @@
 function ImagePopup({ isOpen, onClose, card }) {
+
+  //Обработчик закрытия popup при нажатии на крестик или оверлей
+  const handleClose = (e) => {
+    if (
+      e.target.classList.contains("popup") ||
+      e.target.classList.contains("close-button")
+    )
+    onClose();
+  };
+
   return (
     <div
       className={`popup popup_card ${isOpen && "popup_opened"}`}
-      onClick={onClose}
+      onClick={handleClose}
     >
       <div className="popup__card-container">
         <button
